@@ -74,7 +74,7 @@ class UpdateArgumentResolver implements ArgumentValueResolverInterface
 
         $context = [
             AbstractNormalizer::OBJECT_TO_POPULATE => $entity,
-            //'groups'=>['update']
+            'groups' => ['light-crud-update']
         ];
 
         $this->serializer->deserialize($request->getContent(), $argument->getType(), 'json', $context);

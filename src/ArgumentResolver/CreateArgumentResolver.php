@@ -52,7 +52,7 @@ class CreateArgumentResolver implements ArgumentValueResolverInterface
     public function resolve(Request $request, ArgumentMetadata $argument)
     {
         $context = [
-            //'groups'=>['create']
+            'groups' => ['light-crud-create']
         ];
 
         $entity = $this->serializer->deserialize($request->getContent(), $argument->getType(), 'json', $context);
