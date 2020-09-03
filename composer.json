@@ -1,5 +1,5 @@
 {
-  "name": "tpg/light-crud-bundle",
+  "name": "thephpguys/light-crud-bundle",
   "description": "Create a simple crud for your entities",
   "type": "symfony-bundle",
   "license": "MIT",
