@@ -1,0 +1,25 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+    TPG\LightCrudBundle\ArgumentResolver\CreateArgumentResolver:
+    TPG\LightCrudBundle\ArgumentResolver\UpdateArgumentResolver:
+    TPG\LightCrudBundle\ArgumentResolver\DeleteArgumentResolver:
+
+    TPG\LightCrudBundle\ArgumentResolver\FilterArgumentResolver:
+    TPG\LightCrudBundle\ArgumentResolver\LoadContextArgumentResolver:
+    TPG\LightCrudBundle\ArgumentResolver\PaginationArgumentResolver:
+    TPG\LightCrudBundle\ArgumentResolver\SortingArgumentResolver:
+
+    TPG\LightCrudBundle\ArgumentResolver\ViewArgumentResolver:
+    TPG\LightCrudBundle\ArgumentResolver\RequestResolver:
+    TPG\LightCrudBundle\Serializer\ManyToOneIdEntityDenormalizer:
+    TPG\LightCrudBundle\DataLoader\DataLoader:
+    TPG\LightCrudBundle\DataLoader\View\ViewQueryBuilder:
+    TPG\LightCrudBundle\DataLoader\Filter\ConditionsCriteriaBuilder:
+    TPG\LightCrudBundle\DataLoader\MetadataDoctrine:
+    TPG\LightCrudBundle\DataLoader\Metadata:
+        alias: TPG\LightCrudBundle\DataLoader\MetadataDoctrine
+    TPG\LightCrudBundle\EventListener\RequestValidationExceptionEventListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception }

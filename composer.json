@@ -1,0 +1,26 @@
+{
+  "name": "tpg/light-crud-bundle",
+  "description": "Create a simple crud for your entities",
+  "type": "symfony-bundle",
+  "license": "MIT",
+  "version": "0.0.1",
+  "autoload": {
+    "psr-4": {
+      "TPG\\LightCrudBundle\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Vadim",
+      "email": "misterx@users.noreply.github.com"
+    }
+  ],
+  "require": {
+    "symfony/framework-bundle": "^5.0",
+    "doctrine/orm": "^2.6",
+    "symfony/property-access": "^5.0",
+    "symfony/serializer": "^5.0",
+    "symfony/validator": "^5.0",
+    "ext-json": "*"
+  }
+}
