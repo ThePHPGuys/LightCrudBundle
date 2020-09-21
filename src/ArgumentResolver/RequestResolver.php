@@ -3,14 +3,9 @@
 namespace TPG\LightCrudBundle\ArgumentResolver;
 
 
-use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\Reader;
 use InvalidArgumentException;
-use ReflectionClass;
-use ReflectionMethod;
 use Symfony\Component\HttpFoundation\Request;
-use TPG\LightCrudBundle\Annotation\EntityClass;
-use TPG\LightCrudBundle\Annotation\EntityView;
+use TPG\LightCrudBundle\Annotation\AnnotationReader;
 use TPG\LightCrudBundle\DataLoader\Filter\ConditionsGroup;
 use TPG\LightCrudBundle\DataLoader\LoadContext;
 use TPG\LightCrudBundle\DataLoader\Pagination;
@@ -28,36 +23,15 @@ class RequestResolver
      */
     private $annotationReader;
 
-    public function __construct(Reader $annotationReader)
+    public function __construct(AnnotationReader $annotationReader)
     {
-        //$this->controllerResolver = $controllerResolver;
         $this->annotationReader = $annotationReader;
-        //$this->controllerResolver = $controllerResolver;
     }
 
     public function resolveLoadContext(Request $request): ?LoadContext
     {
         $controller = $this->getControllerMethod($request);
-        $entityClass = null;
-        /** @var ?EntityClass $methodAnnotation */
-        $methodAnnotation = $this->annotationReader->getMethodAnnotation(
-            new ReflectionMethod($controller[0], $controller[1]), EntityClass::class
-        );
-
-        if ($methodAnnotation) {
-            $entityClass = $methodAnnotation;
-        }
-
-        if (!$entityClass) {
-            /** @var ?EntityClass $classAnnotation */
-            $classAnnotation = $this->annotationReader->getClassAnnotation(
-                new ReflectionClass($controller[0]), EntityClass::class
-            );
-            if ($classAnnotation) {
-                $entityClass = $classAnnotation;
-            }
-        }
-
+        $entityClass = $this->annotationReader->getEntityClass($controller[0], $controller[1]);
         if (!$entityClass) {
             return null;
         }
@@ -105,24 +79,11 @@ class RequestResolver
     public function resolveView(Request $request): ?View
     {
         $controller = $this->getControllerMethod($request);
-        /** @var EntityView $methodAnnotation */
-        $methodAnnotation = $this->annotationReader->getMethodAnnotation(
-            new ReflectionMethod($controller[0], $controller[1]), EntityView::class
-        );
-
-        if ($methodAnnotation) {
-            return ViewBuilder::create()->all(...$methodAnnotation->getFields())->build();
+        $entityView = $this->annotationReader->getEntityView($controller[0], $controller[1]);
+        if (!$entityView) {
+            return null;
         }
-
-        $classAnnotation = $this->annotationReader->getClassAnnotation(
-            new ReflectionClass($controller[0]), EntityView::class
-        );
-
-        if ($classAnnotation) {
-            return ViewBuilder::create()->all(...$classAnnotation->getFields())->build();
-        }
-
-        return null;
+        return ViewBuilder::create()->all(...$entityView->getFields())->build();
     }
 
     public function resolveFilter(?string $filterString): ?ConditionsGroup

@@ -12,6 +12,7 @@ use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use TPG\LightCrudBundle\Annotation\AnnotationReader;
 use TPG\LightCrudBundle\Exception\RequestValidationException;
 use TPG\LightCrudBundle\JsonBodySerializable;
 
@@ -29,15 +30,21 @@ class UpdateArgumentResolver implements ArgumentValueResolverInterface
      * @var EntityManagerInterface
      */
     private $em;
+    /**
+     * @var AnnotationReader
+     */
+    private $annotationReader;
 
     public function __construct(
         SerializerInterface $serializer,
         ValidatorInterface $validator,
-        EntityManagerInterface $em
+        EntityManagerInterface $em,
+        AnnotationReader $annotationReader
     ) {
         $this->serializer = $serializer;
         $this->validator = $validator;
         $this->em = $em;
+        $this->annotationReader = $annotationReader;
     }
 
     public function supports(Request $request, ArgumentMetadata $argument): bool
@@ -72,16 +79,28 @@ class UpdateArgumentResolver implements ArgumentValueResolverInterface
             throw new EntityNotFoundException();
         }
 
+        $controllerMethod = $this->getControllerMethod($request);
+        $serializationGroups = $this->annotationReader->getEntitySerialization(...$controllerMethod);
         $context = [
             AbstractNormalizer::OBJECT_TO_POPULATE => $entity,
-            'groups' => ['light-crud-update']
+            'groups' => $serializationGroups ? $serializationGroups->groups() : null
         ];
-
         $this->serializer->deserialize($request->getContent(), $argument->getType(), 'json', $context);
 
-        $violations = $this->validator->validate($entity);
+
+        $validationGroups = $this->annotationReader->getEntityValidation(...$controllerMethod);
+        $violations = $this->validator->validate($entity, null, $validationGroups ? $validationGroups->groups() : null);
         RequestValidationException::assertValid($violations);
 
         yield $entity;
+    }
+
+    private function getControllerMethod(Request $request)
+    {
+        $controller = explode('::', $request->attributes->get('_controller'));
+        if (is_array($controller)) {
+            return $controller;
+        }
+        return [$controller, '__invoke'];
     }
 }
