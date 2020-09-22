@@ -20,7 +20,8 @@ final class Condition
         'doesNotContain',
         'in',
         'notIn',
-        'notEmpty'
+        'notEmpty',
+        'isNull'
     ];
     /**
      * @var string

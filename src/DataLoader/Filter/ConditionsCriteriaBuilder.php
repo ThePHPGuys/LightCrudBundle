@@ -67,6 +67,8 @@ class ConditionsCriteriaBuilder
                 return $expr->notIn($property, (array)$value);
             case 'notEmpty':
                 return $expr->neq($property, null);
+            case 'isNull':
+                return $expr->isNull($property);
             default:
                 throw new Exception(sprintf('Unimplemented %s operator', $condition->operator()));
         }
